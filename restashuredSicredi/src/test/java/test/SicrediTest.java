@@ -3,12 +3,10 @@ package test;
 
 import base.RequestBase;
 import org.junit.Assert;
-import org.junit.jupiter.api.extension.ExtendWith;
 import request.RequestBody;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 
@@ -18,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 
-public class Sicredi {
+public class SicrediTest {
 
     Setenviroment env = new Setenviroment();
     RequestBase base = new RequestBase();
@@ -35,7 +33,7 @@ public class Sicredi {
             "michaelw, , 400",
             ", michaelwpass, 400"
     })
-    public void validaMetodoPost(String username, String password, int statusCode){
+    public void validaMetodoPostAuth(String username, String password, int statusCode){
         String jsonBody = body.jsonMetodoPostAuth(username,password);
         Response teste = base.executePostMethod(env.setEnviromentPost("endpoint.post.auth"),jsonBody);
         Assertions.assertEquals(teste.statusCode(), statusCode);
@@ -44,7 +42,7 @@ public class Sicredi {
         if (statusCode == 200) {
             Assertions.assertNotNull(accessToken, "O accessToken não deveria ser null");
         } else {
-            Assertions.assertTrue(accessToken == null || accessToken.isEmpty(), "O accessToken deveria ser null ou vazio");
+            Assert.assertEquals(teste.path("message"),"Invalid credentials");
         }
 
     }
@@ -100,6 +98,9 @@ public class Sicredi {
         Assertions.assertEquals(teste.statusCode(), 201);
         Assertions.assertNotNull(teste.path("id"));
         Assert.assertEquals(teste.path("title"),"Perfume Oil");
+        int lastId = 195; // Exemplo: último ID antes do teste
+        int id = teste.jsonPath().getInt("id");
+        Assertions.assertTrue(id > lastId, "O ID deve ser maior que o último ID");
     }
 
 
